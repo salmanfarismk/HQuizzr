@@ -4,6 +4,7 @@
 #include <vector>
 #include <random>
 #include <utility>
+#include <windows.h>
 class HiraganaCard {
     public:
         std::string character{"Unknown"};
@@ -50,6 +51,7 @@ void quizdeck(const std::vector<HiraganaCard>& deck) {
         std::cout<<"Your deck is empty! Load some cards first to have a quiz. \n";
         return;
     }
+    int score{0},question{0};
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrib(0,deck.size()-1);
@@ -58,14 +60,20 @@ void quizdeck(const std::vector<HiraganaCard>& deck) {
     std::cout<<"Type quit to exit back to the main menu \n";
     while(true) {
         int randomindex = distrib(gen);
+        
         HiraganaCard target = deck[randomindex];
-        std::cout<<"What is the romaji for "<<target.character<<"? :";
+        std::cout<<"\nWhat is the romaji for "<<target.character<<"? :";
         std::getline(std::cin,answer);
         for (char &l : answer) {
-            l = std::toupper(l);
+            l = std::tolower(l);
         }
-        if (wantstoquit(answer)) break;
+        if (wantstoquit(answer)){ 
+            std::cout<<"\nYou got "<<score<<" out of "<<question<<" right!";
+            break;
+        }
+        question++;
         if (answer == target.romaji) {
+            score++;
             std::cout<<"\nCorrect Answer!\n";
         } else {
             std::cout<<"\nWrong Answer. The correct answer is "<<target.romaji<<".\n";
@@ -73,6 +81,7 @@ void quizdeck(const std::vector<HiraganaCard>& deck) {
     }
 }
 int main() {
+    SetConsoleOutputCP(CP_UTF8);
     std::vector<HiraganaCard> deck;
     loaddeck(deck);
     int choice = 0;
