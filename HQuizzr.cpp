@@ -15,13 +15,13 @@ void savedeck(const std::vector<HiraganaCard>& deck){
     std::ofstream outfile("Hiragana.txt");
     if(outfile.is_open()){
         for(const auto& card : deck){
-            outfile << card.character << " " << card.romaji <<std::endl;
+            outfile << card.character << " " << card.romaji << "\n";
         }
-        std::cout<<"Succesfully saved "<<deck.size()<<" characters to file."<<std::endl;
+        std::cout<<"\nSuccesfully saved "<<deck.size()<<" characters to file.\n";
         outfile.close();
     }
     else {
-        std::cout<<"Error : Could not open txt file"<<std::endl;
+        std::cout<<"\nError : Could not open txt file\n"<<std::endl;
     }
     
 }
@@ -41,10 +41,33 @@ void loaddeck(std::vector<HiraganaCard>& deck) {
     }
 }
 bool wantstoquit(std::string chara) {
-    if (chara == "quit" || chara == "QUIT" || chara == "Quit") {
+    for (char &quit : chara){
+        quit = std::tolower(quit);
+    }
+    if(chara == "quit") {
         return true;
     }
     return false;
+}
+void add_mode(std::vector<HiraganaCard>& deck) {
+    std::cout<<"\n --Add mode-- \n";
+    std::cout<<"Type in quit to exit\n";
+    std::string inputchar;
+    std::string inputromaji;
+    while(true) {
+        std::cout<<"Enter a kana :";
+        std::getline(std::cin,inputchar);
+        if(wantstoquit(inputchar)) return;;
+        std::cout<<"\nEnter the romaji of the given kana :";
+        std::getline(std::cin,inputromaji);
+        for (char &l : inputromaji) {
+            l = std::toupper(l);
+        }
+    }
+    if(wantstoquit(inputromaji)) return;
+    deck.push_back(HiraganaCard(inputchar,inputromaji));
+    std::cout<<"Card added to the deck succesfully!\n";
+
 }
 void quizdeck(const std::vector<HiraganaCard>& deck) {
     if (deck.empty()){
@@ -100,23 +123,7 @@ int main() {
         std::cin.ignore(1000,'\n');
         switch(choice) {
             case 1: {
-                std::cout<<"\n --Add mode-- \n";
-                std::cout<<"Type in quit to exit\n";
-                std::string inputchar;
-                std::string inputromaji;
-                while(true) {
-                    std::cout<<"Enter a kana :";
-                    std::getline(std::cin,inputchar);
-                    if(wantstoquit(inputchar)) break;
-                    std::cout<<"\nEnter the romaji of the given kana :";
-                    std::getline(std::cin,inputromaji);
-                    for (char &l : inputromaji) {
-                        l = std::toupper(l);
-                    }
-                    if(wantstoquit(inputromaji)) break;
-                    deck.push_back(HiraganaCard(inputchar,inputromaji));
-                    std::cout<<"Card added to the deck succesfully!\n";
-                }
+                add_mode(deck);
                 break;
             }
             case 2: {
